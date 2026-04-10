@@ -12,7 +12,7 @@ const API_TOKEN = process.env.BRAWL_TOKEN; // Twój token z Brawl Stars
 // Endpoint do pobierania danych graczy
 app.get('/players', async (req, res) => {
   // Lista Twoich wybranych tagów graczy
-  const tags = ["#2JU909U2Q", "#XYZ789"]; // tutaj wpisz swoje tagi graczy
+  const tags = ["#RPOGGGUJJ", "#P9QP9RC9Q", "#GJCQV89CJ", "#Q8QRLU92U", "#", "#", "#", "#", "#",]; // tutaj wpisz swoje tagi graczy
   try {
     const results = await Promise.all(tags.map(async (tag) => {
       const response = await fetch(`https://api.brawlstars.com/v1/players/${encodeURIComponent(tag)}`, {
