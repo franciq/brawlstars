@@ -1,0 +1,8 @@
+body { font-family: Arial; background: #0f172a; color: white; margin:0; }
+h1 { text-align:center; padding:20px; }
+.players { display:flex; flex-wrap:wrap; justify-content:center; gap:15px; padding:20px; }
+.card { background:#1e293b; border-radius:15px; padding:10px; width:120px; text-align:center; cursor:pointer; transition:0.2s; }
+.card:hover { transform:scale(1.05); }
+.card img { width:80px; border-radius:50%; }
+#details { margin:20px auto; max-width:400px; background:#1e293b; padding:20px; border-radius:15px; text-align:center; }
+button { margin-bottom:10px; cursor:pointer; }
