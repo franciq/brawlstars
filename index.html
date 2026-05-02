@@ -1,56 +1,137 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <title>Debuger API Brawl Stars</title>
-    <style>
-        body { font-family: monospace; background: #000; color: #0f0; padding: 20px; }
-        .error { color: #f00; }
-        .success { color: #0f0; }
-        .log-entry { margin-bottom: 5px; border-bottom: 1px solid #222; padding: 5px; }
-    </style>
+<meta charset="UTF-8">
+<title>Brawl Stars Leaderboard</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+table {
+  margin: 30px auto;
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 500px;
+  background: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+}
+
+th {
+  background: #0ea5e9;
+}
+
+tr:nth-child(even) {
+  background: #334155;
+}
+
+tr:hover {
+  background: #475569;
+}
+
+.rank {
+  font-weight: bold;
+}
+
+.gold { color: gold; }
+.silver { color: silver; }
+.bronze { color: #cd7f32; }
+
+.status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+</style>
 </head>
+
 <body>
-    <h2>Diagnostyka Połączenia</h2>
-    <div id="console">Inicjalizacja...</div>
 
-    <script>
-        const tags = ["RPOGGGUJJ", "P9QP9RC9Q", "GJCQV89CJ", "Q8QRLU92U", "CLV88VVCO", "Q28JYCRPP", "GGVLLV9JU"];
-        const logger = document.getElementById('console');
+<h1>🏆 Leaderboard Brawl Stars</h1>
 
-        function log(msg, type) {
-            const div = document.createElement('div');
-            div.className = 'log-entry ' + type;
-            div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            logger.prepend(div);
-        }
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nick</th>
+      <th>Pucharki</th>
+    </tr>
+  </thead>
+  <tbody id="tabela"></tbody>
+</table>
 
-        async function testAPI() {
-            logger.innerHTML = '';
-            log("Rozpoczynam sprawdzanie graczy...", "success");
+<div class="status" id="status">Ładowanie...</div>
 
-            for (let tag of tags) {
-                const cleanTag = tag.trim().replace('#', '');
-                // Kluczowe: używamy %23 zamiast #
-                const url = `https://api.brawlapi.com/v1/players/%23${cleanTag}`;
-                
-                try {
-                    log(`Sprawdzam: ${url}`, "success");
-                    const res = await fetch(url);
-                    
-                    if (res.ok) {
-                        const data = await res.json();
-                        log(`SUKCES: Znaleziono gracza ${data.name} (${data.trophies}🏆)`, "success");
-                    } else {
-                        log(`BŁĄD ${res.status}: API nie znalazło tagu ${tag}`, "error");
-                    }
-                } catch (e) {
-                    log(`BŁĄD SIECI: Sprawdź czy nie blokuje Cię AdBlock lub Firewall`, "error");
-                }
-            }
-        }
+<script>
+// 🔥 TWOJE TAGI (możesz dodawać więcej)
+const tags = [
+  "%23GGVLLV9JU",
+  "%232Q28JYCRPP",
+  "%23CLV88VVCO",
+  "%23Q8QRLU92U",
+  "%23GJCQV89CJ"
+];
 
-        testAPI();
-    </script>
+async function loadData() {
+  let players = [];
+
+  for (let tag of tags) {
+    try {
+      const res = await fetch(`https://api.brawlify.com/v1/players/${tag}`);
+      const data = await res.json();
+
+      players.push({
+        name: data.name,
+        trophies: data.trophies
+      });
+
+    } catch {
+      console.log("Błąd dla tagu:", tag);
+    }
+  }
+
+  // sortowanie po pucharkach
+  players.sort((a, b) => b.trophies - a.trophies);
+
+  let html = "";
+
+  players.forEach((p, i) => {
+    let medalClass = "";
+    if (i === 0) medalClass = "gold";
+    else if (i === 1) medalClass = "silver";
+    else if (i === 2) medalClass = "bronze";
+
+    html += `
+      <tr>
+        <td class="rank ${medalClass}">${i + 1}</td>
+        <td>${p.name}</td>
+        <td>${p.trophies}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("tabela").innerHTML = html;
+  document.getElementById("status").innerText =
+    "Aktualizacja: " + new Date().toLocaleTimeString();
+}
+
+// start + auto refresh
+loadData();
+setInterval(loadData, 30000);
+</script>
+
 </body>
 </html>
